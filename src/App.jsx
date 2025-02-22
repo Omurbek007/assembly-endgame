@@ -3,6 +3,28 @@ import { languages } from './languages'
 import './App.css'
 
 function App() {
+      const [currentWord, setCurrentWord] = useState('react')
+      const [guessedLetters, setGuessedLetters] = useState([])
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz'
+  console.log(guessedLetters)
+
+      const keyboardElement = alphabet.split('').map((letter, index) => {
+        return (
+          <button onClick={() => {setGuessedLetters(prev => [...prev, letter])}} key={index} className='letter'>
+            {letter.toLocaleUpperCase()}
+          </button>
+        )
+      }
+      )
+
+      const wordElement = currentWord.split('').map((letter, index) => {
+        return (
+          <span key={index} className='letter'>
+            {letter.toLocaleUpperCase()}
+          </span>
+        )
+      }
+      )
 
   const languageElement = languages.map((language) => {
     const style = {
@@ -29,6 +51,13 @@ function App() {
       <section className='lang-section'>
         {languageElement}
       </section>
+      <section className='word-section'>
+        {wordElement}
+      </section>
+      <section className='keyboard-section'>
+        {keyboardElement}
+      </section>
+      <button className='new-game'>New Game</button>
     </>
   )
 }

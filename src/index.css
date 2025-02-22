@@ -1,6 +1,11 @@
 * {
   box-sizing: border-box;
 }
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 body {
   margin: 0;
   font-family: "Hanken Grotesk", Arial, sans-serif;
@@ -29,6 +34,7 @@ header > p {
 }
 
 .status-section {
+  min-width: 350px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,4 +65,60 @@ header > p {
   border-radius: 4px;
   font-size: 1rem;
   padding: 4px;
+}
+.word-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2px;
+  align-items: center;
+  margin-block: 20px;
+}
+.word-section span {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background-color: #323232;
+  color: #F9F4DA;
+  border-bottom: #F9F4DA 2px solid;
+}
+
+.keyboard-section {
+  max-width: 470px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-block: 20px;
+}
+
+.keyboard-section button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  background-color: #FCBA29;
+  color: #1E1E1E;
+  border: 1px solid #D7D7D7;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.new-game {
+  background-color: #11B5E5;
+  border: 1px solid #D7D7D7;
+  border-radius: 4px;
+  width: 225px;
+  height: 40px;
+  padding: 6px 12px;
+  display: block;
+  margin-inline: auto;
+  margin-block: 20px;
+  cursor: pointer;
 }
