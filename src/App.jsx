@@ -1,17 +1,23 @@
 import { useState } from 'react'
 import { languages } from './languages'
+import { getFarewellText } from './utils'
+import Confetti from "react-confetti"
 import clsx from 'clsx'
 import './App.css'
+import { renderToString } from 'react-dom/server'
 
 function App() {
 
       const [currentWord, setCurrentWord] = useState('react')
       const [guessedLetters, setGuessedLetters] = useState([])
 
+      const numGuessesLeft = languages.length - 1;
       const wrongGuessedCount = guessedLetters.filter(letter => !currentWord.includes(letter)).length
       const isGameWon = currentWord.split("").every(letter => guessedLetters.includes(letter))
-      const isGameLost = wrongGuessedCount >= languages.length - 1
+      const isGameLost = wrongGuessedCount >= numGuessesLeft
       const isGameOver = isGameWon || isGameLost
+      const lastGuessedLetter = guessedLetters[guessedLetters.length - 1]
+      const lastGuessedIncorrect = lastGuessedLetter && !currentWord.includes(lastGuessedLetter)
 
       const alphabet = 'abcdefghijklmnopqrstuvwxyz'
       
@@ -61,35 +67,47 @@ function App() {
     )
   })
 
+  function renderGameStatus() {
+    if (!isGameOver && lastGuessedIncorrect) {
+      return (
+        <><p className='farwell-message'>{getFarewellText(languages[wrongGuessedCount - 1].name)}</p></>
+      )
+  } 
+  if (isGameWon) {
+    return (
+      <> 
+          <h2>You win!</h2>
+          <p>Well done! 🏆</p>
+        </>
+    )
+  } else if (isGameLost) {
+    return (
+      <>
+      <h2>Game over!</h2>
+      <p>You lose! Better start learning Assembly 😭</p>
+    </>
+    )
+  } else {
+    return null
+  }
+}
+
+function resetGame() {
+  setGuessedLetters([])
+}
   return (
     <>
+    {isGameWon && <Confetti/>}
       <header>
         <h1>Assembly: Endgame</h1>
         <p>Guess the word in under 8 attempts to keep the programming world safe from Assembly!</p>
       </header>
       <section className={clsx("status-section",{
         won: isGameWon,
-        lose: isGameLost
+        lose: isGameLost,
+        farewell: !isGameOver && lastGuessedIncorrect
       })}>
-
-    {isGameOver ? (
-      isGameWon ? (
-        <>
-          <h2>You win!</h2>
-          <p>Well done! 🏆</p>
-        </>
-      ) :
-      (
-    <>
-      <h2>Game over!</h2>
-      <p>You lose! Better start learning Assembly 😭</p>
-    </>
-      )
-    ) :
-    (
-      null
-    )
-    }
+        {renderGameStatus()}
       </section> 
       <section className='lang-section'>
         {languageElement}
@@ -97,10 +115,29 @@ function App() {
       <section className='word-section'>
         {wordElement}
       </section>
+
+{/* Visual hidden region for aria-level */}
+      <section  
+               className="sr-only" 
+               aria-live="polite" 
+               role="status"
+           >
+               <p>
+                   {currentWord.includes(lastGuessedLetter) ? 
+                       `Correct! The letter ${lastGuessedLetter} is in the word.` : 
+                       `Sorry, the letter ${lastGuessedLetter} is not in the word.`
+                   }
+                   You have {numGuessesLeft} attempts left.
+               </p>
+               <p>Current word: {currentWord.split("").map(letter => 
+               guessedLetters.includes(letter) ? letter + "." : "blank.")
+               .join(" ")}</p>
+            </section>
+
       <section className={clsx('keyboard-section', {keysDisable: isGameOver})}>
         {keyboardElement}
       </section>
-      {isGameOver && <button className='new-game'>New Game</button>}
+      {isGameOver && <button onClick={() => resetGame()} className='new-game'>New Game</button>}
     </>
   )
 }
