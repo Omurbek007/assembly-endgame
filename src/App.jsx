@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import { languages } from './languages'
-import { getFarewellText } from './utils'
+import { getFarewellText, randomWord } from './utils'
 import Confetti from "react-confetti"
 import clsx from 'clsx'
 import './App.css'
-import { renderToString } from 'react-dom/server'
 
 function App() {
 
-      const [currentWord, setCurrentWord] = useState('react')
+      const [currentWord, setCurrentWord] = useState(() => randomWord())
       const [guessedLetters, setGuessedLetters] = useState([])
-
+      console.log(guessedLetters)
       const numGuessesLeft = languages.length - 1;
       const wrongGuessedCount = guessedLetters.filter(letter => !currentWord.includes(letter)).length
       const isGameWon = currentWord.split("").every(letter => guessedLetters.includes(letter))
@@ -45,10 +44,13 @@ function App() {
       }
       )
 
+      
       const wordElement = currentWord.split('').map((letter, index) => {
+        const revealedLetters = isGameLost || guessedLetters.includes(letter)
+        const revealStyle = clsx(isGameLost && !guessedLetters.includes(letter) && "missing-letters")
         return (
-          <span key={index} >
-            {guessedLetters.includes(letter) ? letter.toLocaleUpperCase() : ""}
+          <span key={index} className={revealStyle}>
+            {(revealedLetters ? letter.toLocaleUpperCase() : "🔑")}
           </span>
         )
       }
@@ -70,7 +72,8 @@ function App() {
   function renderGameStatus() {
     if (!isGameOver && lastGuessedIncorrect) {
       return (
-        <><p className='farwell-message'>{getFarewellText(languages[wrongGuessedCount - 1].name)}</p></>
+        <><p className='farwell-message'>{getFarewellText(languages[wrongGuessedCount - 1].name)}</p>
+        </>
       )
   } 
   if (isGameWon) {
@@ -94,10 +97,10 @@ function App() {
 
 function resetGame() {
   setGuessedLetters([])
+  setCurrentWord(randomWord())
 }
   return (
     <>
-    {isGameWon && <Confetti/>}
       <header>
         <h1>Assembly: Endgame</h1>
         <p>Guess the word in under 8 attempts to keep the programming world safe from Assembly!</p>
@@ -110,6 +113,11 @@ function resetGame() {
         {renderGameStatus()}
       </section> 
       <section className='lang-section'>
+        {isGameWon && <Confetti
+          recycle={true}
+          numberOfPieces={100}
+          gravity={0.04}
+        />}
         {languageElement}
       </section>
       <section className='word-section'>
