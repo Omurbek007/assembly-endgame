@@ -3,7 +3,6 @@ import { languages } from './languages'
 import { getFarewellText, randomWord } from './utils'
 import Confetti from "react-confetti"
 import clsx from 'clsx'
-import './App.css'
 
 function App() {
 
